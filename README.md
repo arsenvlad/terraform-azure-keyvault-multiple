@@ -72,6 +72,11 @@ Comment out the data block and use locals block for Key Vault names
 
 ![4th terraform plan debug logs](images/terraform-plan3-debug-logs.png)
 
+```bash
+terraform state rm 'azurerm_key_vault_secret.example["av-keyvault-a-38"]'
+terraform import 'azurerm_key_vault_secret.example["av-keyvault-a-38"]' 'https://av-keyvault-a-38.vault.azure.net/secrets/secret-av-keyvault-a-38/0fbcc9fcd29c451493cb00ea5b1f87ba'
+```
+
 ## Other snippets
 
 Query secrets from Key Vault to see secret specific paging with nextLink property, if there are over 25 secrets in a Key Vault
