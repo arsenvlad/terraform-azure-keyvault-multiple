@@ -49,6 +49,29 @@ terraform plan
 
 ![2nd terraform apply](images/terraform-apply1.png)
 
+## Remove Key Vaults from Terraform state and use data block
+
+```bash
+# Loop to remove all 40 instances of azurerm_key_vault.example from Terraform state
+for i in {0..39}; do
+  terraform state rm "azurerm_key_vault.example[$i]"
+done
+```
+
+Comment out the `azurerm_key_vault` resource block in `main.tf`, add `data` to the secret creation, and run terraform plan
+
+![3rd terraform plan](images/terraform-plan2.png)
+
+## Use local block for Key Vault names
+
+Comment out the data block and use locals block for Key Vault names
+
+![4th terraform plan](images/terraform-plan3.png)
+
+[terraform-plan3.log](terraform-plan3.log) has /vaults calls with nextLink and pages properly since no new secrets are being created
+
+![4th terraform plan debug logs](images/terraform-plan3-debug-logs.png)
+
 ## Other snippets
 
 Query secrets from Key Vault to see secret specific paging with nextLink property, if there are over 25 secrets in a Key Vault

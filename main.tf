@@ -16,6 +16,20 @@ resource "azurerm_resource_group" "example" {
   location = "eastus2"
 }
 
+// Use existing Key Vaults using locals
+locals {
+  key_vault_names = [for i in range(40) : "av-keyvault-a-${i}"]
+}
+
+resource "azurerm_key_vault_secret" "example" {
+  for_each    = { for kv in local.key_vault_names : kv => kv }
+  name        = "secret-${each.key}"
+  value       = "secret-value-${each.key}"
+  key_vault_id = "/subscriptions/1412f248-f41c-4c92-be6c-28f2700d1037/resourceGroups/av-keyvault-a/providers/Microsoft.KeyVault/vaults/${each.value}"
+}
+
+/*
+// Create Key Vaults
 resource "azurerm_key_vault" "example" {
   count               = 40
   name                = "${azurerm_resource_group.example.name}-${count.index}"
@@ -45,4 +59,21 @@ resource "azurerm_key_vault_secret" "example" {
   value       = "secret-value-${each.key}"
   key_vault_id = each.value.id
 }
+*/
+
+/*
+// Use existing Key Vaults via data
+data "azurerm_key_vault" "example" {
+  count               = 40
+  name                = "${azurerm_resource_group.example.name}-${count.index}"
+  resource_group_name = azurerm_resource_group.example.name
+}
+
+resource "azurerm_key_vault_secret" "example" {
+  for_each    = { for kv in data.azurerm_key_vault.example : kv.name => kv }
+  name        = "secret-${each.key}"
+  value       = "secret-value-${each.key}"
+  key_vault_id = each.value.id
+}
+*/
 
